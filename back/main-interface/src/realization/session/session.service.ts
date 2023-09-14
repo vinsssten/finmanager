@@ -17,6 +17,13 @@ export class SessionService {
     return this.sessionRepo.insert({ userId, token });
   }
 
+  updateToken(sessionId: number, token: string) {
+    return this.sessionRepo.update(
+      { id: sessionId },
+      { token, updateDate: () => 'CURRENT_TIMESTAMP' },
+    );
+  }
+
   delete(id: number) {
     return this.sessionRepo.delete({ id: id });
   }

@@ -9,6 +9,11 @@ import { SessionService } from '../session/session.service';
 import { TokenService } from '../token/token.service';
 import { User } from '../../entities/user';
 
+interface TokenPayload {
+  sub: number;
+  name: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,7 +23,7 @@ export class AuthService {
   ) {}
 
   private async auth(user: User) {
-    const payload = { sub: user.id, name: user.name };
+    const payload: TokenPayload = { sub: user.id, name: user.name };
     const { accessToken, refreshToken } =
       this.tokenService.generateTokens(payload);
 
@@ -49,19 +54,25 @@ export class AuthService {
   }
 
   async refresh(refreshToken: string) {
-    const { sub } = this.tokenService.decode(refreshToken) as { sub: number };
-    const sessionList = await this.sessionService.getList(sub);
+    const payload = this.tokenService.verifyRefresh(
+      refreshToken,
+    ) as TokenPayload;
 
-    for (const session of sessionList) {
-      if (!this.tokenService.verifyRefresh(session.token)) {
-        continue;
-      }
+    const sessionList = await this.sessionService.getList(payload.sub);
+    const session = sessionList.find((i) => i.token === refreshToken);
 
-      this.sessionService.delete(session.id);
-      return this.auth(await this.userService.findOne(session.userId));
+    if (!session) {
+      throw new UnauthorizedException();
     }
 
-    throw new UnauthorizedException();
+    const tokens = this.tokenService.generateTokens({
+      sub: payload.sub,
+      name: payload.name,
+    });
+
+    await this.sessionService.updateToken(session.id, tokens.refreshToken);
+
+    return tokens;
   }
 
   async changePassword(id: number, password: string) {

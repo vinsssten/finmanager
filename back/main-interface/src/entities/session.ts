@@ -13,4 +13,7 @@ export class Session {
 
   @Column({ name: 'date_create' })
   dateCreate: Date;
+
+  @Column({ name: 'update_date' })
+  updateDate: Date;
 }

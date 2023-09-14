@@ -6,6 +6,7 @@ import {
   Response,
   Request,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -13,6 +14,8 @@ import { AuthGuard } from './auth.guard';
 import { GetUser } from '../../lib/decorators/user';
 import { UserDto } from '../../models/user.dto';
 import { plainToClass } from 'class-transformer';
+
+const REFRESH_MAX_AGE = 24 * 60 * 60 * 1000;
 
 @ApiTags('Auth controller')
 @Controller('auth')
@@ -32,7 +35,7 @@ export class AuthController {
 
     response.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      expiresIn: new Date(new Date().getTime() + 60 * 60 * 1000),
+      maxAge: REFRESH_MAX_AGE,
     });
 
     response.send({ accessToken });
@@ -49,12 +52,26 @@ export class AuthController {
     return plainToClass(UserDto, await this.authService.getUser(user.sub));
   }
 
-  // TODO логика рефреша
   @Post('refresh')
-  async refresh(@Request() request: Request) {
+  async refresh(@Request() request: Request, @Response() response) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    console.log(request.cookies);
+    const refreshTokenFromCookie = request.cookies.refreshToken;
+
+    if (!refreshTokenFromCookie) {
+      throw new ForbiddenException();
+    }
+
+    const { accessToken, refreshToken } = await this.authService.refresh(
+      refreshTokenFromCookie,
+    );
+
+    response.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: REFRESH_MAX_AGE,
+    });
+
+    response.send({ accessToken });
   }
 
   // @HttpCode(HttpStatus.OK)
