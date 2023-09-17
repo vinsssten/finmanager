@@ -4,11 +4,9 @@ const AuthPage = () => {
     return (
         <div className={'p-4 h-max'} style={{ height: '100%' }}>
             <div>
-                <Card title={'Login'}>
-                    <div className={'flex flex-col gap-2'}>
-                        <p>first</p>
-                        <p>second</p>
-                    </div>
+                <Card title={'Login'} flexChildren>
+                    <p>first</p>
+                    <p>second</p>
                 </Card>
             </div>
         </div>

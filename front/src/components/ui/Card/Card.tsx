@@ -5,9 +5,10 @@ interface Props {
     children?: ReactNode;
     title?: ReactNode;
     footer?: ReactNode;
+    flexChildren?: boolean;
 }
 
-const Card: FC<Props> = ({ children, title, footer }) => {
+const Card: FC<Props> = ({ children, title, footer, flexChildren }) => {
     return (
         <div
             className={
@@ -24,7 +25,10 @@ const Card: FC<Props> = ({ children, title, footer }) => {
                 </div>
             )}
             <div
-                className={classNames('p-2', { 'rounded-t-lg highlight-white': !title })}
+                className={classNames('p-2', {
+                    'rounded-t-lg highlight-white': !title,
+                    'flex flex-col gap-2': flexChildren,
+                })}
             >
                 {children}
             </div>
