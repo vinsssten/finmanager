@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SessionModule } from './realization/session/session.module';
 import { TokenService } from './realization/token/token.service';
 import { TokenModule } from './realization/token/token.module';
+import { TransactionModule } from './realization/transaction/transaction.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TokenModule } from './realization/token/token.module';
     AuthModule,
     SessionModule,
     TokenModule,
+    TransactionModule,
   ],
   providers: [TokenService],
 })
