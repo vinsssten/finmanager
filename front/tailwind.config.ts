@@ -1,4 +1,4 @@
-const colors = require("tailwindcss/colors");
+// const colors = require("tailwindcss/colors");
 import { Config } from "tailwindcss";
 
 /** @type {import('tailwindcss').Config} */
