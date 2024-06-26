@@ -1,0 +1,10 @@
+import axios from 'axios';
+
+export const api = axios.create({
+    baseURL: 'http://localhost:5000',
+});
+
+api.interceptors.request.use(config => {
+    config.headers.set('Authorization', `Bearer ${localStorage.getItem('accessToken')}`);
+    return config;
+});

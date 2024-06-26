@@ -36,7 +36,7 @@ const Card: FC<Props> = ({ children, title, footer, flexChildren }) => {
                 <div
                     className={'rounded-b-lg bg-gray-00 p-2 border-b-1 border-slate-400'}
                 >
-                    {title}
+                    {footer}
                 </div>
             )}
         </div>

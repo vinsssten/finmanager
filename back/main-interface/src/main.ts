@@ -6,6 +6,9 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { snapshot: true });
   app.use(cookieParser());
+  app.enableCors({
+    origin: '*',
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Finmanager: Main Interface')
@@ -27,6 +30,9 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(3000);
+  const port = 5000;
+
+  await app.listen(port);
+  console.log(`Api started on port ${port}.`, `localhost:${port}`);
 }
 bootstrap();

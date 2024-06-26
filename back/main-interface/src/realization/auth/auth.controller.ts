@@ -2,11 +2,10 @@ import {
   Controller,
   Inject,
   Post,
-  Query,
   Response,
   Request,
   UseGuards,
-  ForbiddenException,
+  ForbiddenException, Body, Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -24,13 +23,13 @@ export class AuthController {
 
   @Post('login')
   async signIn(
-    @Query('login') login: string,
-    @Query('password') password: string,
+    @Body() loginDto: { login: string; password: string },
     @Response() response,
   ) {
+    Logger.log(`Try to login ${loginDto.login}`);
     const { accessToken, refreshToken } = await this.authService.signIn(
-      login,
-      password,
+      loginDto.login,
+      loginDto.password,
     );
 
     response.cookie('refreshToken', refreshToken, {
@@ -40,6 +39,7 @@ export class AuthController {
 
     response.send({ accessToken });
   }
+
   @ApiResponse({
     status: 201,
     description: 'Access token is valid',

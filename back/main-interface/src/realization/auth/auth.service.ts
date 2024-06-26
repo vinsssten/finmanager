@@ -1,6 +1,6 @@
 import {
   ForbiddenException,
-  Injectable,
+  Injectable, Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
@@ -39,10 +39,12 @@ export class AuthService {
     const user = await this.userService.findOneByLogin(login);
 
     if (!user) {
+      Logger.log(`Can\`t find user with ${login} login`);
       throw new ForbiddenException('Incorrect login or password');
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
+      Logger.log(`Can\`t login user with ${login} login`);
       throw new ForbiddenException('Incorrect login or password');
     }
 
